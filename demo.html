@@ -65,11 +65,18 @@
     }
   }
 
+  var notified = false;
   function increment(id) {
     let button = document.querySelector('#button' + id);
     let currentState = button.getAttribute('state') * 1;
     let nextState = (currentState + 1) % 4;
-    database.ref('/grid/values/' + id).set(nextState);
+    if (!notified) {
+      alert('Grid edits has been disabled. Local edits will not be synced.');
+      notified = true;
+    }
+    // This line would mutate Firebase.
+    //database.ref('/grid/values/' + id).set(nextState);
+    button.setAttribute('state', nextState.toString());
   }
   
   database.ref('/grid/values').on('value', function(snapshot) {
