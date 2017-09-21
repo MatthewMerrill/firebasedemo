@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Firebasics Demo</title>
+  
+  <style>
+    #grid {
+      width: 800px;
+      line-height: 0;
+    }
+    button {
+      display: inline-block;
+      position: relative;
+      width: 25px;
+      height: 25px;
+      border: none;
+      outline: none;
+      background: green;
+    }
+    button:hover {
+      outline: 2px white dashed;
+      z-index: 99;
+    }
+    button[state="1"] {
+      background: red;
+    }
+    button[state="2"] {
+      background: blue;
+    }
+    button[state="3"] {
+      background: gray;
+    }
+  </style>
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBcxpdr90CMJhnh9N-Fpdy9zLw0J_Eq-q8",
+    authDomain: "demoproject-4c5f1.firebaseapp.com",
+    databaseURL: "https://demoproject-4c5f1.firebaseio.com",
+    projectId: "demoproject-4c5f1",
+    storageBucket: "demoproject-4c5f1.appspot.com",
+    messagingSenderId: "282747749100"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<div id="grid"></div>
+
+<script>
+  let database = firebase.database();
+  let grid = document.querySelector('#grid');
+
+  for (let row = 0; row < 32; row += 1) {
+    for (let col = 0; col < 32; col += 1) {
+      let id = row.toString(32) + col.toString(32);
+      var button = document.createElement('button');
+      button.setAttribute('id', 'button' + id);
+      button.setAttribute('state', 0);
+      button.setAttribute('onclick', 'increment(\'' +id+'\')');
+      grid.append(button);
+    }
+  }
+
+  function increment(id) {
+    let button = document.querySelector('#button' + id);
+    let currentState = button.getAttribute('state') * 1;
+    let nextState = (currentState + 1) % 4;
+    database.ref('/grid/values/' + id).set(nextState);
+  }
+  
+  database.ref('/grid/values').on('value', function(snapshot) {
+    let states = snapshot.val();
+    for (let key of Object.keys(states)) {
+      document.querySelector('#button' + key).setAttribute('state', states[key].toString());
+    }
+  });
+
+</script>
+
+</body>
+</html>
