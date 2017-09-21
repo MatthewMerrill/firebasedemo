@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auth Demo</title>
+  <style>
+    button {
+      display: none;
+    }
+
+    div[state="signedout"] button#signin {
+      display: inline-block;
+    }
+
+    div[state="signedin"] button#signout {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBcxpdr90CMJhnh9N-Fpdy9zLw0J_Eq-q8",
+      authDomain: "demoproject-4c5f1.firebaseapp.com",
+      databaseURL: "https://demoproject-4c5f1.firebaseio.com",
+      projectId: "demoproject-4c5f1",
+      storageBucket: "demoproject-4c5f1.appspot.com",
+      messagingSenderId: "282747749100"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+  <div id="app" state="loading">
+    <h1 id="message">Loading...</h1>
+    <button id="signin" onclick="signIn()">Sign In</button>
+    <button id="signout" onclick="signOut()">Sign Out</button>
+  </div>
+
+  <script>
+    let auth = firebase.auth();
+    let provider = new firebase.auth.GoogleAuthProvider();
+
+    function signIn() {
+      auth.signInWithRedirect(provider);
+    }
+
+    function signOut() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+        document.querySelector('#message').textContent = `Welcome, ${user.displayName}!`;
+        document.querySelector('#app').setAttribute('state', 'signedin');
+      }
+      else {
+        document.querySelector('#message').textContent = `You are not signed in!`;
+        document.querySelector('#app').setAttribute('state', 'signedout');
+      }
+    });
+
+  </script>
+
+</body>
+</html>
